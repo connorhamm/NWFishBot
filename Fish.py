@@ -8,7 +8,7 @@ import pyautogui
 from datetime import datetime
 import pydirectinput
 
-
+#test
 ############### Fix this garbage ########################################
 template = cv2.imread("Hook.png")
 template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
