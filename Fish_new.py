@@ -31,6 +31,7 @@ def take_picture(img):
 def cast():
     time.sleep(2)
     pyautogui.mouseDown()
+    time.sleep(0.5)
     pyautogui.mouseUp()
     time.sleep(0.5)
     
@@ -46,7 +47,8 @@ def hook():
         result = cv2.matchTemplate(edged, template, cv2.TM_CCOEFF_NORMED)
         (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
 
-        if maxVal > 0.55:
+        print("hook val: " + str(maxVal))
+        if maxVal > 0.50:
             print("Hooked Fish!")
             timestamp(maxVal)
             pyautogui.mouseDown()
@@ -55,14 +57,22 @@ def hook():
 
         result = cv2.matchTemplate(edged, missed_template, cv2.TM_CCOEFF_NORMED)
         (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
-
-        if maxVal > 0.80:
+        
+        print("missed hook val: " + str(maxVal))
+        if maxVal > 0.70:
             print("Missed Hook!")
             timestamp(maxVal)
             return 2
+        
+        result = cv2.matchTemplate(edged, wrong_template, cv2.TM_CCOEFF_NORMED)
+        (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
+        if maxVal > 0.80:
+            print("Wrong State")
+            timestamp(maxVal)
+            return 3
 
 def init_reel():
-    for i in range(0,4):   
+    for i in range(0,6):   
         pyautogui.mouseDown()
         time.sleep(0.25)
         pyautogui.mouseUp()
@@ -71,7 +81,7 @@ def init_reel():
 def reel():
     with mss() as sct:
         pyautogui.mouseDown()
-        time.sleep(0.3)
+        time.sleep(0.4)
         pyautogui.mouseUp()
         time.sleep(0.2)
 
@@ -82,6 +92,9 @@ def reel():
 
         result = cv2.matchTemplate(edged, caught_template, cv2.TM_CCOEFF_NORMED)
         (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
+
+        print("missed caught val: " + str(maxVal))
+
         if maxVal > 0.65:
             print("Caught Fishy!")
             timestamp(maxVal)
@@ -92,7 +105,9 @@ def reel():
         result = cv2.matchTemplate(edged, broke_template, cv2.TM_CCOEFF_NORMED)
         (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
 
-        if maxVal > 0.7:
+        print("line broke val: " + str(maxVal))
+
+        if maxVal > 0.6:
             print("Line Broke!")
             timestamp(maxVal)
             return 2
@@ -100,7 +115,9 @@ def reel():
         result = cv2.matchTemplate(edged, wrong_template, cv2.TM_CCOEFF_NORMED)
         (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
 
-        if maxVal > 0.9:
+        print("wrong state val: " + str(maxVal))
+
+        if maxVal > 0.8:
             print("Wrong State")
             timestamp(maxVal)
             return 3
@@ -109,16 +126,18 @@ def west():
     with mss() as sct:
         print("Locating hotspot")
         timestamp("n/a")
+        time.sleep(1)
         pyautogui.press('Escape')
         time.sleep(1)
         pyautogui.moveTo(510,418)
         time.sleep(1)
         pydirectinput.move(0,0)
+        time.sleep(1)
         pyautogui.press('Escape')
         time.sleep(1)
-
+        i = 0
         while(1):
-            pydirectinput.move(1,0)
+            
             img = sct.grab(compass)
             # output = "test.png"
             # tools.to_png(img.rgb, img.size, output=output)
@@ -130,11 +149,25 @@ def west():
 
             result = cv2.matchTemplate(edged, west_template, cv2.TM_CCOEFF_NORMED)
             (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
-            print("Threshold: " + str(maxVal))
-            if maxVal > 0.6:
+            print("West Threshold: " + str(maxVal))
+            if maxVal > 0.65:
                 print("West Found")
                 timestamp(maxVal)
                 break
+            else:
+                pydirectinput.move(1,0)
+                i += 1
+
+            if i > 500:
+                # pyautogui.press('Escape')
+                # time.sleep(1)
+                pyautogui.moveTo(510,418)
+                time.sleep(1)
+                pydirectinput.move(0,0)
+                time.sleep(1)
+                pyautogui.press('Escape')
+                time.sleep(1)
+                i = 0
 
 def repair():
     print("Repairing fishing rod.")
@@ -142,17 +175,17 @@ def repair():
     time.sleep(2)
     pyautogui.press('tab')
     pyautogui.moveTo(460, 580)
-    time.sleep(1)
+    time.sleep(2)
     pyautogui.keyDown('r')
     pyautogui.mouseDown()
-    time.sleep(1)
+    time.sleep(2)
     pyautogui.mouseUp()
-    time.sleep(1)
+    time.sleep(2)
     pyautogui.keyUp('r')
     pyautogui.press('e')
-    time.sleep(1)
+    time.sleep(2)
     pyautogui.press('Escape')
-    time.sleep(1)
+    time.sleep(2)
     pyautogui.press('F3')
 
 ###################################### Main Code ##############################################################
@@ -162,7 +195,9 @@ broke_template = img_template("Line_Broke!.png")
 missed_template = img_template("Missed_Hook!.png")
 repair_template = img_template("Repair.png")
 wrong_template = img_template("Wrong_State.png")
-west_template = img_template("West.png")
+west_template = img_template("West4.png")
+
+run_cnt = 0
 
 start_time = time.time()
 mon = {'top': 180, 'left': 90, 'width': 930, 'height': 480}
@@ -181,6 +216,10 @@ while True:
             missed_cnt += 1
             print("Missed Count: " + str(missed_cnt))
             cast()
+        elif(hook_state == 3):
+            print("Wrong State!")
+            cast()
+        
     init_reel()
     while True:
         reel_state = reel()
@@ -198,8 +237,9 @@ while True:
             print("Wrong State: " + str(wrong_cnt))
             west()
             break
-    if repair_cnt > 5:
+    if repair_cnt > 15:
         repair()
         repair_cnt = 0
-
-#west()
+        run_cnt += 1
+    # if run_cnt > 5000:
+    #     break
