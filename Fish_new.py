@@ -31,7 +31,7 @@ def take_picture(img):
 def cast():
     time.sleep(2)
     pyautogui.mouseDown()
-    time.sleep(0.5)
+    time.sleep(1.9)
     pyautogui.mouseUp()
     time.sleep(0.5)
     
@@ -48,8 +48,8 @@ def hook():
         (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
 
         print("hook val: " + str(maxVal))
-        if maxVal > 0.50:
-            print("Hooked Fish!")
+        if maxVal > 0.52:
+            print("Waiting for Nibble: Hooked Fish!")
             timestamp(maxVal)
             pyautogui.mouseDown()
             pyautogui.mouseUp()
@@ -60,18 +60,19 @@ def hook():
         
         print("missed hook val: " + str(maxVal))
         if maxVal > 0.70:
-            print("Missed Hook!")
+            print("Waiting for Nibble: Missed Hook!")
             timestamp(maxVal)
             return 2
         
         result = cv2.matchTemplate(edged, wrong_template, cv2.TM_CCOEFF_NORMED)
         (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
         if maxVal > 0.80:
-            print("Wrong State")
+            print("Waiting for Nibble: Wrong State")
             timestamp(maxVal)
             return 3
 
 def init_reel():
+    print("Initial Reel To Bypass Hanging Fish Icon")
     for i in range(0,6):   
         pyautogui.mouseDown()
         time.sleep(0.25)
@@ -81,11 +82,16 @@ def init_reel():
 def reel():
     with mss() as sct:
         pyautogui.mouseDown()
-        time.sleep(0.4)
+        time.sleep(0.3)
         pyautogui.mouseUp()
         time.sleep(0.2)
 
         img = sct.grab(mon)
+
+        # output = "test.png"
+        # tools.to_png(img.rgb, img.size, output=output)
+        # print(output)
+
         img = np.array(img)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         edged = cv2.Canny(gray, 50, 200)
@@ -93,10 +99,10 @@ def reel():
         result = cv2.matchTemplate(edged, caught_template, cv2.TM_CCOEFF_NORMED)
         (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
 
-        print("missed caught val: " + str(maxVal))
+        print("Reeling in Fish: missed caught val: " + str(maxVal))
 
         if maxVal > 0.65:
-            print("Caught Fishy!")
+            print("Reeling in Fish: Caught Fishy!")
             timestamp(maxVal)
             pyautogui.mouseDown()
             pyautogui.mouseUp()
@@ -105,9 +111,9 @@ def reel():
         result = cv2.matchTemplate(edged, broke_template, cv2.TM_CCOEFF_NORMED)
         (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
 
-        print("line broke val: " + str(maxVal))
+        print("Reeling in Fish: line broke val: " + str(maxVal))
 
-        if maxVal > 0.6:
+        if maxVal > 0.31:
             print("Line Broke!")
             timestamp(maxVal)
             return 2
@@ -115,16 +121,16 @@ def reel():
         result = cv2.matchTemplate(edged, wrong_template, cv2.TM_CCOEFF_NORMED)
         (_, maxVal, _, maxLoc) = cv2.minMaxLoc(result)
 
-        print("wrong state val: " + str(maxVal))
+        print("Reeling in Fish: wrong state val: " + str(maxVal))
 
         if maxVal > 0.8:
-            print("Wrong State")
+            print("Reeling in Fish: Wrong State")
             timestamp(maxVal)
             return 3
 
 def west():
     with mss() as sct:
-        print("Locating hotspot")
+        print("Locating hotspot based on yellow icon")
         timestamp("n/a")
         time.sleep(1)
         pyautogui.press('Escape')
@@ -188,6 +194,16 @@ def repair():
     time.sleep(2)
     pyautogui.press('F3')
 
+def reset_rod():
+    print("Resetting Fishing Rod.")
+    timestamp("n/a")
+    time.sleep(2)
+    pyautogui.press('F3')
+    time.sleep(3)
+    pyautogui.press('F3')
+    time.sleep(3)
+
+
 ###################################### Main Code ##############################################################
 template = img_template("Hook.png")
 caught_template = img_template("Caught!.png")
@@ -203,7 +219,7 @@ start_time = time.time()
 mon = {'top': 180, 'left': 90, 'width': 930, 'height': 480}
 compass = {'top': 30, 'left': 500, 'width': 25, 'height': 50}
 
-repair_cnt = fish_cnt = missed_cnt = broke_cnt = wrong_cnt = 0 
+repair_cnt = fish_cnt = missed_cnt = broke_cnt = wrong_cnt = reel_cnt = 0 
 time.sleep(2)
 while True:
     repair_cnt += 1
@@ -237,7 +253,12 @@ while True:
             print("Wrong State: " + str(wrong_cnt))
             west()
             break
-    if repair_cnt > 15:
+        if reel_cnt > 200:
+            reset_rod()
+            reel_cnt = 0
+            break
+        reel_cnt+=1
+    if repair_cnt > 50:
         repair()
         repair_cnt = 0
         run_cnt += 1
