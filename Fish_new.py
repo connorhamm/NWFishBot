@@ -8,6 +8,8 @@ import pyautogui
 from datetime import datetime
 import pydirectinput
 
+# Test
+
 def img_template(file):
     template = cv2.imread(file)
     template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
