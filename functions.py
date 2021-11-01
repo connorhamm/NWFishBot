@@ -17,14 +17,14 @@ def img_template(file):
     template = cv2.Canny(template, 50, 200)
     return template
 
-def take_image(monitor, screenshot):
+def take_image(monitor, screenshot, state):
     with mss() as sct:
         img = sct.grab(monitor)
 
         if screenshot == True:
             now = datetime.now() # current date and time
             time = now.strftime("%H-%M-%S")
-            output = "./screenshots/" + str(time) + ".png"
+            output = "./screenshots/" + state + "_" + str(time) + ".png"
             tools.to_png(img.rgb, img.size, output=output)
             print(output)
 

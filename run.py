@@ -18,7 +18,7 @@ class nwfish_bot:
         self.missed_template = img_template("./Images/Missed_Hook!.png")
         self.repair_template = img_template("./Images/Repair.png")
         self.wrong_template = img_template("./Images/Wrong_State.png")
-        self.west_template = img_template("./Images/West4.png")
+        self.hotspot_template = img_template("./Images/hotspot.png")
 
         self.start_time = time.time()
         self.mon = {'top': 180, 'left': 90, 'width': 930, 'height': 480}
@@ -49,10 +49,10 @@ class nwfish_bot:
     def fishing(self):
         while(1):
             print("State: Fishing")
-            edged_img = take_image(self.mon,True)
-            hooked, _ = matchTemplate(self.template, edged_img, 0.52)
-            missed_hook, _ = matchTemplate(self.missed_template, 0.7)
-            wrong, _ = matchTemplate(self.wrong_template, 0.8)
+            edged_img = take_image(self.mon,True, "Fishing")
+            hooked, _ = matchTemplate(self.template, edged_img, 0.1) # Changed from 0.52
+            missed_hook, _ = matchTemplate(self.missed_template, edged_img, 0.7)
+            wrong, _ = matchTemplate(self.wrong_template, edged_img, 0.8)
             if hooked == True:
                 print("Event: Hooked Fish!")
                 pyautogui.mouseDown()
@@ -68,6 +68,7 @@ class nwfish_bot:
         
     def init_reel(self):
         print("State: Initial Reel")
+        edged_img = take_image(self.mon, True, "Initial_Reel")
         for i in range(0,6):   
             pyautogui.mouseDown()
             time.sleep(0.25)
@@ -76,14 +77,15 @@ class nwfish_bot:
         self.reel()
 
     def reel(self):
+        print("State: Reel")
         while(1):
             pyautogui.mouseDown()
             time.sleep(0.3)
             pyautogui.mouseUp()
             time.sleep(0.2)        
             
-            edged_img = take_image(self.mon,True)
-            caught, _ = matchTemplate(self.caught_template, edged_img, 0.65)
+            edged_img = take_image(self.mon,True, "Reel")
+            caught, _ = matchTemplate(self.caught_template, edged_img, 0.1) ## Changed from 0.65
             broke, _ = matchTemplate(self.broke_template, edged_img, 0.31)
             wrong, _ = matchTemplate(self.wrong_template, edged_img, 0.8)
 
@@ -118,10 +120,10 @@ class nwfish_bot:
 
 
         while(1):
-            edged_img = take_image(self.compass,True)
-            west, _ = matchTemplate(self.west_template, edged_img, 0.65)
+            edged_img = take_image(self.compass,True, "Hotspot")
+            hotspot, _ = matchTemplate(self.hotspot_template, edged_img, 0.65)
 
-            if west == True:
+            if hotspot == True:
                 print("Event: Hotspot Found")
             else:
                 pydirectinput.move(1,0)
@@ -150,7 +152,8 @@ class nwfish_bot:
         time.sleep(3)
 
     def repair(self):
-        print("Repairing fishing rod.")
+        print("State: Repair")
+        edged_img = take_image(self.compass,True, "Repair")
         timestamp("n/a")
         time.sleep(2)
         pyautogui.press('tab')
@@ -167,6 +170,8 @@ class nwfish_bot:
         pyautogui.press('Escape')
         time.sleep(2)
         pyautogui.press('F3')
+        time.sleep(1)
 
 ###################################### Main Code ##############################################################
+print("Welcome to SlyTurtle's New World FIshing Bot")
 nwfish_bot()
