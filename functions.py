@@ -1,8 +1,6 @@
 import cv2
-import pyautogui
 from mss import mss
 from mss import tools
-import time
 import numpy as np
 from datetime import datetime
 
@@ -45,14 +43,3 @@ def matchTemplate(img_template, edged, threshold):
             return True, loc
         else:
             return False, 0
-
-def matched_click(loc, w, h):
-    x = loc[1][0] + w / 2
-    y = loc[0][0] + h / 2
-    pyautogui.moveTo(x,y)
-    time.sleep(1)
-    pyautogui.click()
-    time.sleep(1)
-    pyautogui.moveTo(10,10)
-    time.sleep(1)
-

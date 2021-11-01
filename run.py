@@ -1,8 +1,6 @@
 """
 To Do:
 1. Test program at home and optimize, use same location.
-
-Cast -> Init Reel -> Reel -> Locate Hotspot -> Repair -> AFK Detection
 """
 
 import time
@@ -118,7 +116,6 @@ class nwfish_bot:
         time.sleep(1)
         i = 0
 
-
         while(1):
             edged_img = take_image(self.compass,True, "Hotspot")
             hotspot, _ = matchTemplate(self.hotspot_template, edged_img, 0.65)
@@ -130,8 +127,6 @@ class nwfish_bot:
                 i += 1
 
             if i > 500:
-                # pyautogui.press('Escape')
-                # time.sleep(1)
                 pyautogui.moveTo(510,418)
                 time.sleep(1)
                 pydirectinput.move(0,0)
