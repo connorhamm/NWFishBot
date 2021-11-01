@@ -1,6 +1,6 @@
 """
 To Do:
-1. Test program at home
+1. Test program at home and optimize, use same location.
 
 Cast -> Init Reel -> Reel -> Locate Hotspot -> Repair -> AFK Detection
 """
@@ -50,7 +50,7 @@ class nwfish_bot:
         while(1):
             print("State: Fishing")
             edged_img = take_image(self.mon,True, "Fishing")
-            hooked, _ = matchTemplate(self.template, edged_img, 0.1) # Changed from 0.52
+            hooked, _ = matchTemplate(self.template, edged_img, 0.52)
             missed_hook, _ = matchTemplate(self.missed_template, edged_img, 0.7)
             wrong, _ = matchTemplate(self.wrong_template, edged_img, 0.8)
             if hooked == True:
@@ -85,7 +85,7 @@ class nwfish_bot:
             time.sleep(0.2)        
             
             edged_img = take_image(self.mon,True, "Reel")
-            caught, _ = matchTemplate(self.caught_template, edged_img, 0.1) ## Changed from 0.65
+            caught, _ = matchTemplate(self.caught_template, edged_img, 0.65)
             broke, _ = matchTemplate(self.broke_template, edged_img, 0.31)
             wrong, _ = matchTemplate(self.wrong_template, edged_img, 0.8)
 
