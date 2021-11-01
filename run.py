@@ -66,7 +66,7 @@ class nwfish_bot:
         
     def init_reel(self):
         print("State: Initial Reel")
-        edged_img = take_image(self.mon, True, "Initial_Reel")
+        take_image(self.mon, True, "Initial_Reel")
         for i in range(0,6):   
             pyautogui.mouseDown()
             time.sleep(0.25)
@@ -148,7 +148,7 @@ class nwfish_bot:
 
     def repair(self):
         print("State: Repair")
-        edged_img = take_image(self.compass,True, "Repair")
+        take_image(self.compass,True, "Repair")
         timestamp("n/a")
         time.sleep(2)
         pyautogui.press('tab')
