@@ -16,7 +16,7 @@ Thanks for checking out my project!
 * Verify yellow marker alligns with the location of the hostpot or fishing spot
 * Press F3 to pull out fishing Rod and face the yellow marker
 * Navigate to your install directory using `cd` and run `py "run.py"` in Command Prompt
-* Follow the remaining instructions in Command Prompt
+* Follow the remaining steps in the Command Prompt
 
 # Troubleshooting:
 
