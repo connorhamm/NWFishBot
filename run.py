@@ -1,7 +1,5 @@
-"""
-To Do:
-1. Test program at home and optimize, use same location.
-"""
+# To Do: Setup Bait
+# Make sure there are no infinite chains/loops that will hog memory/resources
 
 import time
 import pyautogui
@@ -29,6 +27,7 @@ class nwfish_bot:
         self.wrong_cnt = 0
         self.reel_cnt = 0 
         self.run_cnt = 0
+        self.reset_cnt = 0
 
         time.sleep(2)
 
@@ -47,26 +46,27 @@ class nwfish_bot:
     def fishing(self):
         while(1):
             print("State: Fishing")
-            edged_img = take_image(self.mon,True, "Fishing")
+            edged_img = take_image(self.mon,False, "Fishing")
             hooked, _ = matchTemplate(self.template, edged_img, 0.52)
-            missed_hook, _ = matchTemplate(self.missed_template, edged_img, 0.7)
-            wrong, _ = matchTemplate(self.wrong_template, edged_img, 0.8)
             if hooked == True:
                 print("Event: Hooked Fish!")
                 pyautogui.mouseDown()
                 pyautogui.mouseUp()
                 self.init_reel()
-            elif missed_hook == True:
-                print("Event: Missed Hook!")
-                break
-            elif wrong == True:
-                print("Event: Wrong State Detected!")
-                break
+            else:
+                missed_hook, _ = matchTemplate(self.missed_template, edged_img, 0.7)
+                wrong, _ = matchTemplate(self.wrong_template, edged_img, 0.8)
+                if missed_hook == True:
+                    print("Event: Missed Hook!")
+                    break
+                elif wrong == True:
+                    print("Event: Wrong State Detected!")
+                    break
         self.cast()
         
     def init_reel(self):
         print("State: Initial Reel")
-        take_image(self.mon, True, "Initial_Reel")
+        take_image(self.mon, False, "Initial_Reel")
         for i in range(0,6):   
             pyautogui.mouseDown()
             time.sleep(0.25)
@@ -82,7 +82,7 @@ class nwfish_bot:
             pyautogui.mouseUp()
             time.sleep(0.2)        
             
-            edged_img = take_image(self.mon,True, "Reel")
+            edged_img = take_image(self.mon,False, "Reel")
             caught, _ = matchTemplate(self.caught_template, edged_img, 0.65)
             broke, _ = matchTemplate(self.broke_template, edged_img, 0.31)
             wrong, _ = matchTemplate(self.wrong_template, edged_img, 0.8)
@@ -102,6 +102,8 @@ class nwfish_bot:
                 self.wrong_cnt += 1
                 break
         self.hotspot()
+        self.run_cnt += 1
+        self.reset_cnt += 1
 
     def hotspot(self):
         print("State: Locate Hotspot")
@@ -117,11 +119,12 @@ class nwfish_bot:
         i = 0
 
         while(1):
-            edged_img = take_image(self.compass,True, "Hotspot")
+            edged_img = take_image(self.compass,False, "Hotspot")
             hotspot, _ = matchTemplate(self.hotspot_template, edged_img, 0.65)
 
             if hotspot == True:
                 print("Event: Hotspot Found")
+                break
             else:
                 pydirectinput.move(1,0)
                 i += 1
@@ -138,34 +141,37 @@ class nwfish_bot:
         self.repair()
 
     def reset_rod(self):
-        print("Resetting Fishing Rod.")
-        timestamp("n/a")
-        time.sleep(2)
-        pyautogui.press('F3')
-        time.sleep(3)
-        pyautogui.press('F3')
-        time.sleep(3)
+        if self.reset_cnt >= 10:
+            print("Resetting Fishing Rod.")
+            timestamp("n/a")
+            time.sleep(2)
+            pyautogui.press('F3')
+            time.sleep(3)
+            pyautogui.press('F3')
+            time.sleep(3)
 
     def repair(self):
-        print("State: Repair")
-        take_image(self.compass,True, "Repair")
-        timestamp("n/a")
-        time.sleep(2)
-        pyautogui.press('tab')
-        pyautogui.moveTo(460, 580)
-        time.sleep(2)
-        pyautogui.keyDown('r')
-        pyautogui.mouseDown()
-        time.sleep(2)
-        pyautogui.mouseUp()
-        time.sleep(2)
-        pyautogui.keyUp('r')
-        pyautogui.press('e')
-        time.sleep(2)
-        pyautogui.press('Escape')
-        time.sleep(2)
-        pyautogui.press('F3')
-        time.sleep(1)
+        if self.run_cnt > 10:
+            print("State: Repair")
+            take_image(self.mon,False, "Repair")
+            timestamp("n/a")
+            time.sleep(2)
+            pyautogui.press('tab')
+            pyautogui.moveTo(460, 580)
+            time.sleep(2)
+            pyautogui.keyDown('r')
+            pyautogui.mouseDown()
+            time.sleep(2)
+            pyautogui.mouseUp()
+            time.sleep(2)
+            pyautogui.keyUp('r')
+            pyautogui.press('e')
+            time.sleep(2)
+            pyautogui.press('Escape')
+            time.sleep(2)
+            pyautogui.press('F3')
+            time.sleep(1)
+            self.run_cnt = 0
 
 ###################################### Main Code ##############################################################
 print("Welcome to SlyTurtle's New World FIshing Bot")
