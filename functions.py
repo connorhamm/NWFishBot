@@ -22,7 +22,7 @@ def take_image(monitor, screenshot, state):
         if screenshot == True:
             now = datetime.now() # current date and time
             time = now.strftime("%H-%M-%S")
-            output = "./screenshots/" + state + "_" + str(time) + ".png"
+            output = "./screenshots/" + str(time) + "_" + state +".png"
             tools.to_png(img.rgb, img.size, output=output)
             print(output)
 
