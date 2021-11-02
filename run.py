@@ -1,5 +1,6 @@
-# To Do: Setup Bait
+# To Do: 
 # Make sure there are no infinite chains/loops that will hog memory/resources
+# Remove unnecessary time delays to make it more effective
 
 import time
 import pyautogui
@@ -29,6 +30,7 @@ class nwfish_bot:
         self.run_cnt = 0
         self.reset_cnt = 0
 
+        # Setup Time
         time.sleep(2)
 
         self.cast()
@@ -137,6 +139,7 @@ class nwfish_bot:
                 pyautogui.press('Escape')
                 time.sleep(1)
                 i = 0
+        self.bait()
         self.reset_rod()
         self.repair()
 
@@ -153,7 +156,6 @@ class nwfish_bot:
     def repair(self):
         if self.run_cnt > 10:
             print("State: Repair")
-            take_image(self.mon,False, "Repair")
             timestamp("n/a")
             time.sleep(2)
             pyautogui.press('tab')
@@ -172,6 +174,17 @@ class nwfish_bot:
             pyautogui.press('F3')
             time.sleep(1)
             self.run_cnt = 0
+    
+    def bait(self):
+        if self.reset_rod >= 10:
+            print("State: Bait")
+            timestamp("n/a")
+            pyautogui.press('e') # Need to define button to press
+            time.sleep(1)
+            pyautogui.moveTo(0, 0) # Need to define location
+            time.sleep(1)
+            pyautogui.click()
+            time.sleep(2)
 
 ###################################### Main Code ##############################################################
 print("Welcome to SlyTurtle's New World FIshing Bot")
